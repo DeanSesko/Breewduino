@@ -1,16 +1,20 @@
 #include <OneWire.h>
 #include <Stdio.h>
+#include <EEPROM.h>
 
+
+#define NUM_TS 9
+byte tSensor[9][8];
+int RunOnce = 0;
 OneWire  ow(10);
- 
-byte HL[8] ={0x28, 0x54, 0x78, 0x7B, 0x02, 0x00, 0x00, 0xCC};
+int address = 0;
+byte value;
+int i;
+int a;
 
+ byte Tempaddr[8] = {0, 0, 0, 0, 0, 0, 0, 0};
+String MyString0;
 
-//byte Mash[8] ={0x28, 0x54, 0x72, 0x7B, 0x02, 0x00, 0x00, 0x71};
-byte Mash[8] ={0x28, 0x9F, 0xA0, 0x7B, 0x02, 0x00, 0x00, 0xCB};
-byte Kettle[8] ={0x28, 0x2C, 0x35, 0x81, 0x02, 0x00, 0x00, 0x9A};
-byte RimTemp[8]= {0x28, 0x7F, 0x71, 0x7B, 0x02, 0x00, 0x00, 0x71};
-byte OverHeatTemp[8]= {0x28, 0xAD, 0xAC, 0x7B, 0x02, 0x00, 0x00, 0x69};
 int loopcount = 0;
 void setup(void) {
   Serial.begin(115200);
@@ -26,45 +30,40 @@ void setup(void) {
     digitalWrite(3, HIGH);
     digitalWrite(4, HIGH);
     digitalWrite(5, HIGH);
-
+   EEPROMreadBytes(0, *tSensor, 72);
    }
  
-
- 
 void loop(void) {
+  
+if (RunOnce == 1) { 
+RunOnce = 0;
+EEPROMreadBytes(0, *tSensor, 72);
+for (int i = 0; i < 72; i++){
+  EEPROM.write(i, 0);
+}
+
+for (int a = 0; a < NUM_TS; a++){
+byte addr[8] = {0, 0, 0, 0, 0, 0, 0, 0};
+getDSAddr(addr);
+setTSAddr(a, addr);
+EEPROMreadBytes(0, *tSensor, 72);
+}
+}
+for( i = 0; i < NUM_TS; i++) {
 
 float temp;
 float tmp2;
-tmp2 = getTemperature(HL);
+if (validAddr(tSensor[i])){
+tmp2 = getTemperature(tSensor[i]);
 temp = c2f(tmp2);
 Serial.print(temp);
-Serial.println(",HL");
-delay(10);
-CheckSerialUpdate();
-tmp2 = getTemperature(Kettle);
-temp = c2f(tmp2);
-Serial.print(temp);
-Serial.println(",Kettle");
-delay(10);
-CheckSerialUpdate();
- tmp2 = getTemperature(OverHeatTemp);
-temp = c2f(tmp2);
-Serial.print(temp);
-Serial.println(",OverHeatTemp");
-delay(10);
-CheckSerialUpdate();
-tmp2 = getTemperature(Mash);
-temp = c2f(tmp2);
-Serial.print(temp);
-Serial.println(",Mash");
-delay(10);
-CheckSerialUpdate();
-tmp2 = getTemperature(RimTemp);
-temp = c2f(tmp2);
-
-Serial.print(temp);
-Serial.println(",RimTemp");
+Serial.print(",Sensor");
+Serial.println(i);
 
 delay(10);
 CheckSerialUpdate();
+}
+}
+
+
 }

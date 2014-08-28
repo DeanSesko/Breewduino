@@ -42,7 +42,12 @@ if (Serial.available() > 0) {
        
       break;
       case 'j': 
-      digitalWrite(5, HIGH);      
+      digitalWrite(5, HIGH);   
+      
+      break;
+      case 's':
+      RunOnce=1;
+   
  }
   Serial.flush() ;
   Serial.println(inByte);
