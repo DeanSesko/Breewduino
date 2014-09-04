@@ -1,10 +1,15 @@
+/*  
+ Main Routine for Brewing App
+ 
+*/
+
 #include <OneWire.h>
 #include <Stdio.h>
 #include <EEPROM.h>
 
-
 #define NUM_TS 9
 byte tSensor[9][8];
+
 int RunOnce = 0;
 OneWire  ow(10);
 int address = 0;
@@ -20,17 +25,13 @@ void setup(void) {
   Serial.begin(115200);
     pinMode(2, OUTPUT);
     pinMode(3, OUTPUT);
-    pinMode(4, OUTPUT);
-    pinMode(5, OUTPUT);
-    pinMode(6, OUTPUT);
+      pinMode(6, OUTPUT);
     pinMode(7, OUTPUT);
-    digitalWrite(6, LOW);
-    digitalWrite(7, LOW);
     digitalWrite(2, HIGH);
     digitalWrite(3, HIGH);
-    digitalWrite(4, HIGH);
-    digitalWrite(5, HIGH);
-   EEPROMreadBytes(0, *tSensor, 72);
+    digitalWrite(6, LOW);
+    digitalWrite(7, LOW);
+    EEPROMreadBytes(0, *tSensor, 72);
    }
  
 void loop(void) {
